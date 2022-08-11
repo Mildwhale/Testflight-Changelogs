@@ -31,7 +31,7 @@ export class ChangelogService {
   
       try {
         // Builds
-        const builds = await this.appStoreService.getBuilds(appId);
+        const builds = await this.appStoreService.getBuilds(appId, 10);
         const build = builds.find(build => build.version === buildNumber);
   
         if (!build) {
