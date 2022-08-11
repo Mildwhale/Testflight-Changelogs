@@ -2,8 +2,8 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import dotEnv from 'dotenv';
 import fs from 'fs';
-import { ChangelogService } from './changelogservice.js';
-import { logger } from './winston.js';
+import { ChangelogService } from './services/changelogservice.js';
+import { logger } from './services/winston.js';
 
 dotEnv.config({ path: './env/.env' });
 
