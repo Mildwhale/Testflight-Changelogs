@@ -37,14 +37,11 @@ curl -d '{"app_id":"123456789", "build_number":"1.0.1234567", "changelog":"hello
 ```ruby
 def post_changelog(app_id, changelog)
   url = "http://localhost:4000/changelog"
+  body = {app_id: app_id, build_number: build_number, changelog: changelog}.to_json
   response = Faraday.post(
     url, 
-    "{
-      \"app_id\":\"#{app_id}\", 
-      \"build_number\":\"#{get_build_number}\", 
-      \"changelog\":\"#{changelog}\"
-    }",
-    "Content-Type" => "application/json"
+    body,
+    'Content-Type' => 'application/json'
   )
     
   case response.status
