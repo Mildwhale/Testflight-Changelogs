@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import dotEnv from 'dotenv';
 import fs from 'fs';
 import { ChangelogService } from './changelogservice.js';
+import { logger } from './winston.js';
 
 dotEnv.config({ path: './env/.env' });
 
@@ -15,14 +16,13 @@ const changelogService = new ChangelogService(
 
 express()
   .get('/', function (_, res) {
-    res.send('Hello');
-  })
-  .get('/debug-jwt', function (_, res) {
-    res.send(appStoreService.debug_jwt_token());
+    logger.info('GET /');
+    res.sendStatus(200);
   })
   .use(bodyParser.json())
   .post('/changelog', function (req, res) {
-    console.log('[POST] changelog');
+    logger.info('POST /changelog');
+    logger.info(`${ JSON.stringify(req.body) }`);
 
     // Start Scheduled Job
     if (!changelogService.startScheduledJob(
@@ -37,5 +37,5 @@ express()
     res.sendStatus(200);
   })
   .listen(PORT, () => {
-    console.log(`Listening on ${PORT}`)
+    logger.info(`Listening on ${ PORT }`);
   });
