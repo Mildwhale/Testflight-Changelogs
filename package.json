@@ -1,35 +1,31 @@
 {
-  "name": "testflight-changelogs",
+  "name": "Testflight-Changelogs",
   "version": "1.0.0",
-  "description": "",
-  "type": "module",
-  "engines": {
-    "node": "18.x"
-  },
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Mildwhale/Testflight-Changelogs.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Mildwhale/Testflight-Changelogs/issues"
-  },
-  "homepage": "https://github.com/Mildwhale/Testflight-Changelogs#readme",
-  "dependencies": {
+  "main": "app.ts",
+  "repository": "git@github.com:Mildwhale/Testflight-Changelogs.git",
+  "author": "Kyujin Kim <mildwhale@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/body-parser": "^1.19.2",
+    "@types/express": "^4.17.13",
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/node": "^18.7.2",
+    "@types/uuid": "^8.3.4",
     "axios": "^0.27.2",
-    "body-parser": "^1.20.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "jsonwebtoken": "^8.5.1",
-    "npm": "^8.15.1",
+    "nodemon": "^2.0.19",
     "toad-scheduler": "^1.6.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4",
     "uuid": "^8.3.2",
     "winston": "^3.8.1",
-    "winston-daily-rotate-file": "^4.7.1"
+    "winston-daily-rotate-file": "^4.7.1",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "scripts": {
+    "start": "node dist/src/app.js",
+    "build": "tsc -p .",
+    "dev": "nodemon --watch \"src/**/*.ts\" --exec \"ts-node\" src/app.ts"
   }
 }

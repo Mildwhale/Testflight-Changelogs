@@ -6,4 +6,4 @@ if [ -f ".path" ]; then
     echo ".path=${PATH}"
 fi
 
-npm start
+yarn start
