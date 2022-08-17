@@ -57,9 +57,13 @@ export class JiraService {
         }
 
         if ((build?.processingState ?? '') !== 'VALID') {
-          this.tryCountCache.set(uuid, tryCount + 1);
-          logger.info(`[${uuid}] Processing not finished, the task will resume after ${interval} minutes.`);
-          return
+          if (tryCount >= maxTryCount) {
+            throw new Error(`[${ uuid }] Timeout.`);
+          } else {
+            this.tryCountCache.set(uuid, tryCount + 1);
+            logger.info(`[${uuid}] Processing not finished, the task will resume after ${interval} minutes.`);
+            return
+          }
         }
 
         logger.info(`[${uuid}] Processing finished.`);
@@ -92,7 +96,7 @@ export class JiraService {
     })
 
     // Make IntervalJob
-    const job = new SimpleIntervalJob({ seconds: 10 }, asyncTask, uuid);
+    const job = new SimpleIntervalJob({ minutes: interval }, asyncTask, uuid);
 
     // Set Scheduler
     this.scheduler.addSimpleIntervalJob(job);
