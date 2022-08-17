@@ -57,9 +57,7 @@ export class JiraService {
         }
 
         if ((build?.processingState ?? '') !== 'VALID') {
-          if (tryCount >= maxTryCount) {
-            throw new Error(`[${ uuid }] Timeout.`);
-          } else {
+          if (tryCount < maxTryCount) {
             this.tryCountCache.set(uuid, tryCount + 1);
             logger.info(`[${uuid}] Processing not finished, the task will resume after ${interval} minutes.`);
             return
