@@ -2,14 +2,19 @@ import { logger } from './winston';
 import { v4 as uuidv4 } from 'uuid';
 import { AppStoreService } from './appstoreservice';
 import { ToadScheduler, SimpleIntervalJob, AsyncTask } from 'toad-scheduler';
+import fs from 'fs';
 
 export class ChangelogService {
   private appStoreService: AppStoreService
   private scheduler: ToadScheduler
   private tryCountCache: Map<string, number>
 
-  constructor(issuerId: string, keyId: string, key: string) {
-    this.appStoreService = new AppStoreService(issuerId, keyId, key);
+  constructor() { 
+    this.appStoreService = new AppStoreService(
+      process.env.ISSUER_ID ?? '', 
+      process.env.KEY_ID ?? '', 
+      fs.readFileSync(process.env.CERTIFICATE_FILE_PATH || '').toString()
+    );
     this.scheduler = new ToadScheduler();
     this.tryCountCache = new Map();
   }
@@ -93,6 +98,10 @@ export class ChangelogService {
     logger.info(`[${ uuid }] Task will start soon.`);
 
     return true
+  }
+
+  public debugJwt(): string {
+    return this.appStoreService.generateJwtToken()
   }
 
   private removeJobById(uuid: string) {
