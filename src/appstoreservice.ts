@@ -1,6 +1,12 @@
 import * as jwt from 'jsonwebtoken';
 import axios, { AxiosRequestConfig } from 'axios';
 
+export interface App {
+  id: string;
+  bundleId: string;
+  name: string;
+}
+
 export interface Build {
   id: string;
   version: string;
@@ -25,6 +31,26 @@ export class AppStoreService {
     this.issuerId = issuerId;
     this.keyId = keyId;
     this.key = key;
+  }
+
+  public async getApp(appId: string): Promise<App> {
+    const api = '/apps';
+    const query = '?filter[id]=' + appId + '&fields[apps]=name,bundleId';
+    const url = this.baseUrl + api + query;
+
+    try {
+      const response = await axios.get(url, this.getConfig());
+      const app = response.data.data[0];
+
+      return {
+        id: app.id,
+        bundleId: app.attributes.bundleId,
+        name: app.attributes.name
+      }
+    } catch (error) {
+      // Handle error
+      throw error;
+    }
   }
 
   public async getBuilds(appId: string, limit = 5): Promise<[Build]> {
@@ -127,7 +153,7 @@ export class AppStoreService {
     }
   }
 
-  private generateJwtToken(): string {
+  public generateJwtToken(): string {
     const payload = {
       iss: this.issuerId,
       aud: 'appstoreconnect-v1',
