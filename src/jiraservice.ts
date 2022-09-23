@@ -61,11 +61,12 @@ export class JiraService {
             this.tryCountCache.set(uuid, tryCount + 1);
             logger.info(`[${uuid}] Processing not finished, the task will resume after ${interval} minutes.`);
             return
+          } else {
+            throw new Error(`[${ uuid }] Processing not finished. (Timeout)`);
           }
         }
 
         logger.info(`[${uuid}] Processing finished.`);
-        logger.debug(JSON.stringify(build));
 
         // Get app info
         const app = await this.appStoreService.getApp(appId);
@@ -74,13 +75,12 @@ export class JiraService {
         const issueKey = await this.findIssueKeyIn(branch);
         logger.info(`[${uuid}] Issue key => ${issueKey.issue}`);
 
-        const addCommentResult = await this.jiraClient.addCommentAdvanced(
+        await this.jiraClient.addCommentAdvanced(
           issueKey.issue,
           this.makeComment(app.name, buildNumber, changelog)
         )
 
         logger.info(`[${uuid}] Comment added.`);
-        logger.debug(JSON.stringify(addCommentResult));
 
         // Finish
         this.removeJobById(uuid);

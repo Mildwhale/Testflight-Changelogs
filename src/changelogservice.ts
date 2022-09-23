@@ -43,25 +43,23 @@ export class ChangelogService {
         const build = builds.find(build => build.version === buildNumber);
 
         if (!build) {
-          if (tryCount >= maxTryCount) {
-            throw new Error(`[${ uuid }] Can't found build. (Timeout)`);
-          } else {
+          if (tryCount < maxTryCount) {
             this.tryCountCache.set(uuid, tryCount + 1);
             logger.info(`[${ uuid }] Can't found build, the task will resume after ${ interval } minutes.`);
             return
+          } else {
+            throw new Error(`[${ uuid }] Can't found build. (Timeout)`);
           }
         } else if (build.expired) {
           throw new Error(`[${ uuid }] Expired build.`);
         }
   
         logger.info(`[${ uuid }] Build founded.`);
-        logger.debug(JSON.stringify(build));
   
         // Localization
         const localization = await this.appStoreService.getLocalization(build.id);
   
         logger.info(`[${ uuid }] Localization received.`);
-        logger.debug(JSON.stringify(localization));
 
         if (!localization) {
           throw new Error(`[${ uuid }] Can't found localization.`);
@@ -70,14 +68,12 @@ export class ChangelogService {
         }
   
         // SetChangelog
-        const resultOfSetChangelog = await this.appStoreService.setChangelog(localization.id, changelog);
+        await this.appStoreService.setChangelog(localization.id, changelog);
         logger.info(`[${ uuid }] SetChangelog finished.`);
-        logger.debug(JSON.stringify(resultOfSetChangelog));
   
         // SetUsesNonExemptEncryption
-        const resultOfSetEncryption = await this.appStoreService.setUsesNonExemptEncryption(build.id);
+        await this.appStoreService.setUsesNonExemptEncryption(build.id);
         logger.info(`[${ uuid }] setEncryption finished.`);
-        logger.debug(JSON.stringify(resultOfSetEncryption));
   
         // Finish
         this.removeJobById(uuid);
