@@ -21,6 +21,11 @@ export interface Localization {
   locale: string;
 }
 
+export interface PreReleaseVersion {
+  id: string;
+  version: string;
+}
+
 export class AppStoreService {
   private baseUrl = 'https://api.appstoreconnect.apple.com/v1';
   private issuerId: string
@@ -116,6 +121,24 @@ export class AppStoreService {
         id: localization.id,
         whatsNew: localization.attributes.whatsNew,
         locale: localization.attributes.locael
+      }
+    } catch (error) {
+      // Handle error
+      throw error;
+    }
+  }
+
+  public async getPreReleaseVersion(buildId: String): Promise<PreReleaseVersion> {
+    const api = '/builds';
+    const url = this.baseUrl + api + `/${buildId}` + '/preReleaseVersion';
+
+    try {
+      const response = await axios.get(url, this.getConfig());
+      const preReleaseVersion: any = response.data.data;
+
+      return {
+        id: preReleaseVersion.id,
+        version: preReleaseVersion.attributes.version
       }
     } catch (error) {
       // Handle error

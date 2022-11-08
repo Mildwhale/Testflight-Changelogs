@@ -70,6 +70,7 @@ export class JiraService {
 
         // Get app info
         const app = await this.appStoreService.getApp(appId);
+        const preReleaseVersion = await this.appStoreService.getPreReleaseVersion(build?.id ?? '');
 
         // JIRA ADD COMMENT
         const issueKey = await this.findIssueKeyIn(branch);
@@ -77,7 +78,7 @@ export class JiraService {
 
         await this.jiraClient.addCommentAdvanced(
           issueKey.issue,
-          this.makeComment(app.name, buildNumber, changelog)
+          this.makeComment(app.name, preReleaseVersion.version, buildNumber, changelog)
         )
 
         logger.info(`[${uuid}] Comment added.`);
@@ -169,7 +170,7 @@ export class JiraService {
     throw new Error(`Can't found issueKeys.`);
   }
 
-  private makeComment(name: string, buildNumber: string, changelog: string) {
+  private makeComment(name: string, appVersion: string, buildNumber: string, changelog: string) {
     return {
       body: {
         "version": 1,
@@ -208,7 +209,7 @@ export class JiraService {
             "content": [
               {
                 "type": "text",
-                "text": "빌드 번호",
+                "text": "앱 버전(빌드 번호)",
                 "marks": [
                   {
                     "type": "strong"
@@ -222,7 +223,7 @@ export class JiraService {
             "content": [
               {
                 "type": "text",
-                "text": `${buildNumber}`
+                "text": `${appVersion}(${buildNumber})`
               }
             ]
           },
