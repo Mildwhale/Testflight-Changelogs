@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import dotEnv from 'dotenv';
+import serveIndex from 'serve-index';
 import { ChangelogService } from './changelogservice';
 import { JiraService } from './jiraservice';
 import { logger } from './winston';
@@ -8,6 +9,7 @@ import { logger } from './winston';
 dotEnv.config({ path: './env/.env' });
 
 const PORT = process.env.PORT || 4000;
+const OUTPUT_PATH = process.env.OUTPUT_PATH || '../outputs';
 const changelogService = new ChangelogService();
 const jiraService = new JiraService();
 
@@ -58,6 +60,8 @@ app.post('/jiraDeployComment', function (req, res) {
 
   res.sendStatus(200);
 });
+
+app.use('/outputs', express.static(OUTPUT_PATH), serveIndex(OUTPUT_PATH, {'icons': true, 'view': 'details'}));
 
 app.listen(PORT, () => {
   logger.info(`Listening on ${PORT}`);
